@@ -30,6 +30,7 @@ lib/realtime.ts                            -- checkin/going subscribe + write he
 lib/buzzScore.ts                           -- client-side buzz_score aggregation
 lib/eventMatch.ts                          -- energy/social match -> pin opacity
 lib/suburbMatch.ts                         -- quiz -> ranked suburb list
+lib/heatmapGeoJson.ts                      -- buzz scores -> Mapbox heatmap layer GeoJSON + style
 ```
 
 `lib/*` has no Next.js-specific imports except the `NEXT_PUBLIC_*` env vars in
@@ -117,6 +118,21 @@ relatively skewed toward (see `normalizeToScores` in `scripts/overpass.ts`).
 If Overpass rate-limits from one machine/IP, it's a per-IP limit — running
 the fetch from a different network for the remaining suburbs and merging the
 resulting `_overpassCache.json` files works fine.
+
+### Heatmap layer
+
+There's no external "heatmap API" — per the handoff doc, the heatmap is a
+Mapbox GL native `type: 'heatmap'` layer rendered client-side from the same
+checkin/going data that drives pin glow, just weighted and displayed
+differently. `lib/heatmapGeoJson.ts` does the one conversion step needed:
+`toHeatmapGeoJSON(events, buzzScores)` turns events + the output of
+`computeBuzzScores` into the GeoJSON `FeatureCollection` a Mapbox `<Source>`
+expects, and `heatmapLayerStyle` is a ready-to-use `<Layer>` paint config
+(dark-palette cyan ramp, radius/opacity keyed to zoom so it cross-fades into
+individual pins as the viewer zooms in, matching the brief's spec). Events
+with no activity still appear at weight 0 rather than being dropped, so the
+heatmap's extent always reflects "where events are," not just "where
+checkins have happened."
 
 ### Realtime check
 
