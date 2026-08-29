@@ -16,8 +16,11 @@ The Next.js frontend app (map UI, quiz, animation) is not in this repo yet.
 ```
 supabase/migrations/0001_init_schema.sql   -- tables, RLS, Realtime publication
 scripts/seedData/suburbs.ts                -- 8 real Sydney suburbs + vibe vectors (generated, see below)
-scripts/seedData/events.ts                 -- 18 hand-curated real-venue events
-scripts/seed.ts                            -- clears + inserts the above into Supabase
+scripts/seedData/events.ts                 -- 18 hand-curated real-venue events (permanent golden-path floor)
+scripts/seedData/ticketmasterEvents.ts     -- live concert/festival/cultural events (generated, see below)
+scripts/ticketmaster.ts                    -- Discovery API fetch + nearest-suburb resolution
+scripts/fetchTicketmasterEvents.ts         -- runner: writes seedData/ticketmasterEvents.ts
+scripts/seed.ts                            -- clears + inserts suburbs + both event sources into Supabase
 scripts/overpass.ts                        -- Overpass POI-density fetch + composition normalization
 scripts/fetchSuburbScores.ts               -- runner: caches raw POI counts to seedData/_overpassCache.json
 scripts/generateBlurbs.ts                  -- runner: OpenAI (gpt-4o-mini) blurbs to seedData/_blurbCache.json
@@ -64,13 +67,27 @@ just don't run it *during* the live judging walkthrough.
 
 The Eventbrite public **search** API was deprecated in Feb 2020 — a key today
 only lists events belonging to an organization you own, not a searchable
-city-wide feed, so it can't backfill "real events happening in Sydney" the
-way the original brief assumed. `scripts/seedData/events.ts` is hand-curated
-against real, verifiable venues/addresses instead and is the dataset the demo
-should run on regardless. If council open-data or another real feed turns up
-something usable, add a fetch step ahead of the `events` array in
-`scripts/seed.ts` — the insert logic doesn't care whether a row came from an
-API or was hand-typed.
+city-wide feed. **Ticketmaster's Discovery API replaces it** — it's a real,
+live, city-wide public search that still works. `scripts/seed.ts` combines
+two sources:
+
+- `scripts/seedData/events.ts` — 18 hand-curated events against real,
+  verifiable venues/addresses, covering all 6 categories including
+  charity/ngo/historical (Ticketmaster has no listings for those). This is
+  the permanent golden-path floor the demo can always fall back on.
+- `scripts/seedData/ticketmasterEvents.ts` — **generated**, live concert/
+  festival/cultural events currently on sale in Sydney. Regenerate with:
+  ```bash
+  npx tsx scripts/fetchTicketmasterEvents.ts   # needs TICKETMASTER_API_KEY in .env
+  npm run seed
+  ```
+  Each venue is bucketed into a seeded suburb by nearest centroid distance
+  (Ticketmaster's own "city" field is just "Sydney", not the actual
+  suburb — useless for matching). Cancelled/offsale events are filtered by
+  `dates.status.code`. This is the "update once a day" source — rerun the
+  fetch + reseed on whatever cadence you want; it's a static file in
+  between runs, so the demo never depends on a live API call happening
+  during judging.
 
 ### Suburb vibe scores — real data pipeline
 

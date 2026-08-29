@@ -10,7 +10,14 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import { suburbs } from "./seedData/suburbs";
-import { events } from "./seedData/events";
+import { events as handCuratedEvents } from "./seedData/events";
+import { ticketmasterEvents } from "./seedData/ticketmasterEvents";
+
+// Hand-curated golden-path events (all categories, guaranteed stable) plus
+// live Ticketmaster events (concert/festival/cultural only, refreshed via
+// `npx tsx scripts/fetchTicketmasterEvents.ts`) — see README for the
+// once-a-day refresh workflow.
+const events = [...handCuratedEvents, ...ticketmasterEvents];
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
