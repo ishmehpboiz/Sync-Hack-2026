@@ -53,7 +53,7 @@ export function QuizEntryCta({ view, quizSummary, onStartQuiz }: QuizEntryCtaPro
               <button
                 type="button"
                 onClick={onStartQuiz}
-                className="flex min-h-[44px] items-center gap-1 border border-ink-950/20 px-2.5 font-mono text-[9px] font-medium tracking-[0.1em] text-ink-950/60"
+                className="flex min-h-[44px] items-center gap-1 rounded-lg border border-white/15 bg-white/5 backdrop-blur-md px-2.5 font-mono text-[9px] font-medium tracking-[0.1em] text-ink-950/60"
               >
                 <Pencil className="h-2.5 w-2.5" strokeWidth={2} />
                 EDIT

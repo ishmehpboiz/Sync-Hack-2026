@@ -47,7 +47,7 @@ export function LegendZoomLadder({ view }: LegendZoomLadderProps) {
               className="overflow-hidden"
             >
               <div
-                className="mt-3 h-3.5 border border-ink-950/12"
+                className="mt-3 h-3.5 rounded-full border border-white/10"
                 style={{ background: "linear-gradient(90deg,#101010 40%,#5e5e5e 65%,#b4b4b4 85%,#f4f4f4)" }}
               />
               <div className="mt-2 flex justify-between font-mono text-[9px] font-medium text-ink-950/50">
@@ -66,7 +66,7 @@ export function LegendZoomLadder({ view }: LegendZoomLadderProps) {
                 {BANDS.map((band) => (
                   <span
                     key={band.key}
-                    className={cn("h-1.5 flex-1", band.key === activeBand ? "bg-ink-900" : "bg-ink-950/16")}
+                    className={cn("h-1.5 flex-1 rounded-full", band.key === activeBand ? "bg-ink-900" : "bg-ink-950/16")}
                   />
                 ))}
               </div>

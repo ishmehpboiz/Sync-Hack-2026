@@ -16,11 +16,18 @@ interface SuburbBloomsProps {
   onSelect: (suburbId: string) => void;
 }
 
+// Fixed footprint for every suburb marker — deliberately not scaled by
+// event count or people count, so one busy suburb (e.g. the CBD with 17
+// events) doesn't visually swallow the rest of the map. Buzz still reads
+// through glow/label opacity below, just not through size.
+const BLOOM_SIZE = 220;
+const NAME_SIZE = 20;
+
 /**
  * City-zoom radial "bloom" per suburb — the ambient, non-clickable-pin view
- * of buzz before zooming into individual events. Size/opacity/label weight
- * all scale with that suburb's aggregate buzz; buzz is carried by darkness
- * and scale only, never hue (Desktop App Greyscale.dc.html).
+ * of buzz before zooming into individual events. Opacity/label weight scale
+ * with that suburb's aggregate buzz; buzz is carried by darkness, never hue
+ * (Desktop App Greyscale.dc.html).
  */
 export function SuburbBlooms({ suburbs, aggregates, onSelect }: SuburbBloomsProps) {
   return (
@@ -29,9 +36,9 @@ export function SuburbBlooms({ suburbs, aggregates, onSelect }: SuburbBloomsProp
         const agg = aggregates.get(suburb.id) ?? { eventCount: 0, hereNow: 0, buzz: 0 };
         if (agg.eventCount === 0) return null;
 
-        const size = 140 + agg.buzz * 260; // 140-400px
+        const size = BLOOM_SIZE;
         const coreAlpha = 0.1 + agg.buzz * 0.4;
-        const nameSize = 16 + agg.buzz * 10; // 16-26px
+        const nameSize = NAME_SIZE;
         const nameOpacity = 0.42 + agg.buzz * 0.44;
 
         return (

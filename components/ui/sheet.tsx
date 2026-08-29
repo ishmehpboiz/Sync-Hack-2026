@@ -22,12 +22,12 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  "fixed z-50 bg-ink-5/97 backdrop-blur-lg border-ink-950/14 shadow-[-14px_0_44px_rgba(15,15,15,0.12)] flex flex-col outline-none",
+  "fixed z-50 bg-ink-5/75 backdrop-blur-xl border-white/10 shadow-[-14px_0_44px_rgba(15,15,15,0.28)] flex flex-col outline-none",
   {
     variants: {
       side: {
-        right: "right-0 top-0 h-full w-full sm:max-w-[420px] border-l",
-        bottom: "bottom-0 left-0 right-0 max-h-[85vh] border-t",
+        right: "right-0 top-0 h-full w-full sm:max-w-[420px] rounded-l-2xl border-l",
+        bottom: "bottom-0 left-0 right-0 max-h-[85vh] rounded-t-2xl border-t",
       },
     },
     defaultVariants: { side: "bottom" },

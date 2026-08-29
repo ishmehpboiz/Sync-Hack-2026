@@ -97,12 +97,12 @@ export function QuizOverlay({
       : [];
 
   return (
-    <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-ink-100/86 backdrop-blur-[3px]">
+    <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-ink-100/70 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="flex w-[1020px] max-w-[92vw] bg-ink-5 shadow-[0_30px_80px_rgba(15,15,15,0.26)]"
+        className="flex w-[1020px] max-w-[92vw] overflow-hidden rounded-2xl bg-ink-5/75 shadow-[0_30px_80px_rgba(15,15,15,0.4)] backdrop-blur-xl border border-white/10"
       >
         <div className="flex flex-1 flex-col p-11">
           <div className="flex items-center gap-3.5">
@@ -111,7 +111,7 @@ export function QuizOverlay({
             </span>
             <span className="flex flex-1 gap-1">
               {STEPS.map((_, i) => (
-                <span key={i} className={i <= stepIndex ? "h-1 flex-1 bg-ink-900" : "h-1 flex-1 bg-ink-950/16"} />
+                <span key={i} className={i <= stepIndex ? "h-1 flex-1 rounded-full bg-ink-900" : "h-1 flex-1 rounded-full bg-ink-950/16"} />
               ))}
             </span>
           </div>
@@ -135,7 +135,7 @@ export function QuizOverlay({
               type="button"
               disabled={stepIndex === 0}
               onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
-              className="flex min-h-[44px] items-center gap-1.5 border border-ink-950/22 px-5 font-mono text-[10px] font-medium tracking-[0.12em] text-ink-950 disabled:opacity-30"
+              className="flex min-h-[44px] items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 backdrop-blur-md px-5 font-mono text-[10px] font-medium tracking-[0.12em] text-ink-950 disabled:opacity-30"
             >
               <ArrowLeft className="h-3 w-3" strokeWidth={2} />
               BACK
@@ -143,7 +143,7 @@ export function QuizOverlay({
             <button
               type="button"
               onClick={() => (isLast ? onSubmit() : setStepIndex((i) => i + 1))}
-              className="bg-ink-900 px-7 py-[18px] font-serif text-[22px] leading-none text-ink-10 shadow-[0_12px_30px_rgba(15,15,15,0.26)]"
+              className="rounded-lg bg-ink-900 px-7 py-[18px] font-serif text-[22px] leading-none text-ink-10 shadow-[0_12px_30px_rgba(15,15,15,0.26)]"
             >
               {isLast ? "Show me the map" : "Next"}
             </button>

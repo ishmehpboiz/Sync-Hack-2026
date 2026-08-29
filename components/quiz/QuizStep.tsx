@@ -41,8 +41,8 @@ export function QuizStep({ title, subtitle, icon: Icon, options, selected, onTog
               type="button"
               onClick={() => onToggle(opt.value)}
               className={cn(
-                "min-h-[44px] px-[22px] py-4 text-base transition-colors",
-                active ? "bg-ink-900 text-ink-10" : "border border-ink-950/22 text-ink-950"
+                "min-h-[44px] rounded-lg px-[22px] py-4 text-base transition-colors",
+                active ? "bg-ink-900 text-ink-10" : "border border-white/15 bg-white/5 backdrop-blur-md text-ink-950"
               )}
             >
               {opt.label}

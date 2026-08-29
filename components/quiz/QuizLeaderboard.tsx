@@ -12,7 +12,7 @@ export function QuizLeaderboard({ ranking }: QuizLeaderboardProps) {
   const leaderScore = top[0]?.score || 1;
 
   return (
-    <div className="flex w-[330px] flex-none flex-col border-l border-ink-950/14 bg-ink-50 px-9 py-11">
+    <div className="flex w-[330px] flex-none flex-col border-l border-white/10 bg-ink-50/70 backdrop-blur-xl px-9 py-11">
       <div className="font-mono text-[10px] font-medium tracking-[0.14em] text-ink-950/50">
         LEADING SO FAR
       </div>
@@ -33,8 +33,8 @@ export function QuizLeaderboard({ ranking }: QuizLeaderboardProps) {
                   {Math.round(result.score)}
                 </span>
               </div>
-              <span className="h-[7px] bg-ink-950/12">
-                <span className="block h-[7px] bg-ink-900" style={{ width: `${pct}%`, opacity: emphasis }} />
+              <span className="h-[7px] rounded-full bg-ink-950/12">
+                <span className="block h-[7px] rounded-full bg-ink-900" style={{ width: `${pct}%`, opacity: emphasis }} />
               </span>
             </div>
           );

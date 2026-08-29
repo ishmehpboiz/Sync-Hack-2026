@@ -18,6 +18,7 @@ import { CheckinTicker } from "@/components/overlay/CheckinTicker";
 import { SuburbHeroDrawer } from "@/components/drawers/SuburbHeroDrawer";
 import { EventDetailDrawer } from "@/components/drawers/EventDetailDrawer";
 import { QuizOverlay } from "@/components/quiz/QuizOverlay";
+import { OnboardingOverlay } from "@/components/onboarding/OnboardingOverlay";
 
 import { useEventsAndSuburbs } from "@/hooks/useEventsAndSuburbs";
 import { useLiveActivity } from "@/hooks/useLiveActivity";
@@ -64,13 +65,16 @@ export function MapExperience() {
     [activeCategories, accessibilityOnly, tonightOnly]
   );
 
+  // Category/access/tonight filters actually hide non-matching events (see
+  // filteredEvents below) rather than just dimming them — dimming is
+  // reserved for the softer, non-exclusionary quiz-vibe-match signal.
   const eventOpacity = useCallback(
-    (event: (typeof events)[number]) => {
-      const base = quiz.quizAnswers ? opacityForMatch(computeMatchScore(event, quiz.quizAnswers)) : 1;
-      return passesFilters(event) ? base : Math.min(base, 0.35);
-    },
-    [quiz.quizAnswers, passesFilters]
+    (event: (typeof events)[number]) =>
+      quiz.quizAnswers ? opacityForMatch(computeMatchScore(event, quiz.quizAnswers)) : 1,
+    [quiz.quizAnswers]
   );
+
+  const filteredEvents = useMemo(() => events.filter(passesFilters), [events, passesFilters]);
 
   const flyTo = useCallback((longitude: number, latitude: number, zoom: number) => {
     mapRef.current?.flyTo({ center: [longitude, latitude], zoom, duration: FLY_DURATION });
@@ -106,6 +110,14 @@ export function MapExperience() {
     [events, flyTo]
   );
 
+  // Closing the event drawer drops back to whichever view makes sense —
+  // the suburb it came from, or city if it was opened without one — without
+  // re-flying the camera, since it's already framed correctly.
+  const closeEvent = useCallback(() => {
+    setSelectedEventId(null);
+    setView(selectedSuburbId ? "suburb" : "city");
+  }, [selectedSuburbId]);
+
   const goQuiz = useCallback(() => setView("quiz"), []);
 
   const handleQuizSubmit = useCallback(() => {
@@ -115,8 +127,8 @@ export function MapExperience() {
   }, [quiz, goSuburb]);
 
   const eventsInSuburb = useMemo(
-    () => events.filter((e) => e.suburb_id === selectedSuburbId),
-    [events, selectedSuburbId]
+    () => filteredEvents.filter((e) => e.suburb_id === selectedSuburbId),
+    [filteredEvents, selectedSuburbId]
   );
 
   const selectedSuburb = useMemo(
@@ -133,7 +145,7 @@ export function MapExperience() {
     let maxBuzz = 0;
     const raw = new Map<string, { eventCount: number; hereNow: number; buzz: number }>();
     for (const suburb of suburbs) {
-      const suburbEvents = events.filter((e) => e.suburb_id === suburb.id);
+      const suburbEvents = filteredEvents.filter((e) => e.suburb_id === suburb.id);
       let hereNow = 0;
       let buzz = 0;
       for (const e of suburbEvents) {
@@ -148,7 +160,7 @@ export function MapExperience() {
       map.set(id, { ...agg, buzz: maxBuzz > 0 ? agg.buzz / maxBuzz : 0 });
     }
     return map;
-  }, [suburbs, events, buzzScores]);
+  }, [suburbs, filteredEvents, buzzScores]);
 
   const categoryCounts = useMemo(() => {
     const counts = new Map<EventCategory, number>();
@@ -157,8 +169,8 @@ export function MapExperience() {
   }, [events]);
 
   const totalHereNow = useMemo(
-    () => Array.from(buzzScores.values()).reduce((sum, b) => sum + b.checkinCount, 0),
-    [buzzScores]
+    () => filteredEvents.reduce((sum, e) => sum + getBuzz(buzzScores, e.id).checkinCount, 0),
+    [filteredEvents, buzzScores]
   );
 
   const quizSummary = useMemo(() => {
@@ -181,7 +193,7 @@ export function MapExperience() {
       <Toaster position="bottom-center" theme="light" />
 
       <MapCanvas ref={mapRef} onZoomChange={setZoom}>
-        <HeatmapLayer events={events} buzzScores={buzzScores} />
+        <HeatmapLayer events={filteredEvents} buzzScores={buzzScores} />
 
         {view === "city" && (
           <SuburbBlooms suburbs={suburbs} aggregates={suburbAggregates} onSelect={goSuburb} />
@@ -206,7 +218,7 @@ export function MapExperience() {
         </div>
       )}
 
-      {view === "city" && <IdentityBar eventCount={events.length} hereNow={totalHereNow} />}
+      {view === "city" && <IdentityBar eventCount={filteredEvents.length} hereNow={totalHereNow} />}
 
       {(view === "suburb" || view === "event") && selectedSuburb && (
         <Breadcrumb
@@ -259,7 +271,6 @@ export function MapExperience() {
             events={eventsInSuburb}
             buzzScores={buzzScores}
             onEventClick={goEvent}
-            onSeeAll={() => {}}
             onNext={() => {
               const idx = suburbs.findIndex((s) => s.id === selectedSuburb.id);
               const next = suburbs[(idx + 1) % suburbs.length];
@@ -280,6 +291,7 @@ export function MapExperience() {
             totalInSuburb={eventsInSuburb.length}
             onCheckIn={checkIn}
             onGoing={markGoing}
+            onClose={closeEvent}
           />
         )}
       </AnimatePresence>
@@ -296,6 +308,8 @@ export function MapExperience() {
           onSkip={goCity}
         />
       )}
+
+      <OnboardingOverlay />
     </div>
   );
 }

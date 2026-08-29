@@ -60,7 +60,7 @@ export function CheckinTicker({ checkins, events, visible }: CheckinTickerProps)
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -14 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="flex items-center gap-3.5 bg-ink-900 px-5 py-3.5 text-ink-10 shadow-[0_10px_30px_rgba(15,15,15,0.28)]"
+            className="flex items-center gap-3.5 rounded-lg bg-ink-900 px-5 py-3.5 text-ink-10 shadow-[0_10px_30px_rgba(15,15,15,0.28)]"
           >
             <Zap className="h-3.5 w-3.5" strokeWidth={2} fill="currentColor" />
             <span className="relative inline-flex h-2 w-2">

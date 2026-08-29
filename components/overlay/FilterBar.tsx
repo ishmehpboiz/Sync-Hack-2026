@@ -4,33 +4,19 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutGrid,
-  Music,
-  PartyPopper,
-  HandHeart,
-  Users,
-  Landmark,
-  Palette,
   Accessibility,
   Moon,
   Check,
   Filter,
   ChevronDown,
   ChevronUp,
-  type LucideIcon,
 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Toggle } from "@/components/ui/toggle";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { CATEGORY_ICONS } from "@/lib/categoryIcons";
 import type { EventCategory } from "@/lib/types";
-
-const CATEGORY_ICONS: Record<EventCategory, LucideIcon> = {
-  concert: Music,
-  festival: PartyPopper,
-  charity: HandHeart,
-  ngo: Users,
-  historical: Landmark,
-  cultural: Palette,
-};
 
 interface CategoryCount {
   category: EventCategory;
@@ -49,12 +35,6 @@ interface FilterBarProps {
   onToggleTonight: () => void;
 }
 
-const chipClass = (active: boolean) =>
-  cn(
-    "flex min-h-[44px] items-center gap-1.5 px-3 font-mono text-[10px] font-medium tracking-[0.08em]",
-    active ? "bg-ink-900 text-ink-10" : "border border-ink-950/18 text-ink-950/62"
-  );
-
 export function FilterBar({
   categories,
   totalCount,
@@ -69,6 +49,16 @@ export function FilterBar({
   const [open, setOpen] = useState(true);
   const activeCount = activeCategories.size + (accessibilityOnly ? 1 : 0) + (tonightOnly ? 1 : 0);
 
+  function handleCategoryValueChange(newValue: string[]) {
+    const newSet = new Set(newValue);
+    for (const cat of activeCategories) {
+      if (!newSet.has(cat)) return onToggleCategory(cat);
+    }
+    for (const cat of newValue) {
+      if (!activeCategories.has(cat as EventCategory)) return onToggleCategory(cat as EventCategory);
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
@@ -80,43 +70,45 @@ export function FilterBar({
         <AnimatePresence initial={false}>
           {open && (
             <motion.div
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "auto" }}
-              exit={{ opacity: 0, width: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-stretch gap-2.5 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex items-stretch gap-2.5"
             >
-              <div className="flex flex-wrap gap-1.5">
-                <button type="button" onClick={onClearCategories} className={chipClass(activeCategories.size === 0)}>
+              <div className="flex max-w-[460px] flex-wrap gap-1.5">
+                <Toggle pressed={activeCategories.size === 0} onPressedChange={onClearCategories}>
                   <LayoutGrid className="h-3 w-3" strokeWidth={2} />
                   ALL {totalCount}
-                </button>
-                {categories.map(({ category, count }) => {
-                  const Icon = CATEGORY_ICONS[category];
-                  return (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() => onToggleCategory(category)}
-                      className={chipClass(activeCategories.has(category))}
-                    >
-                      <Icon className="h-3 w-3" />
-                      {category.toUpperCase()} {count}
-                    </button>
-                  );
-                })}
+                </Toggle>
+                <ToggleGroup
+                  type="multiple"
+                  value={Array.from(activeCategories)}
+                  onValueChange={handleCategoryValueChange}
+                  className="flex flex-wrap gap-1.5"
+                >
+                  {categories.map(({ category, count }) => {
+                    const Icon = CATEGORY_ICONS[category];
+                    return (
+                      <ToggleGroupItem key={category} value={category}>
+                        <Icon className="h-3 w-3" />
+                        {category.toUpperCase()} {count}
+                      </ToggleGroupItem>
+                    );
+                  })}
+                </ToggleGroup>
               </div>
-              <span className="w-px flex-none bg-ink-950/14" />
+              <span className="w-px flex-none bg-white/10" />
               <div className="flex flex-none items-center gap-1.5">
-                <button type="button" onClick={onToggleAccessibility} className={chipClass(accessibilityOnly)}>
+                <Toggle pressed={accessibilityOnly} onPressedChange={onToggleAccessibility}>
                   <Accessibility className="h-3 w-3" strokeWidth={2} />
                   ACCESS
                   {accessibilityOnly && <Check className="h-3 w-3" strokeWidth={2.5} />}
-                </button>
-                <button type="button" onClick={onToggleTonight} className={chipClass(tonightOnly)}>
+                </Toggle>
+                <Toggle pressed={tonightOnly} onPressedChange={onToggleTonight}>
                   <Moon className="h-3 w-3" strokeWidth={2} />
                   TONIGHT
-                </button>
+                </Toggle>
               </div>
             </motion.div>
           )}
@@ -126,7 +118,7 @@ export function FilterBar({
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Collapse" : "Expand"}
-          className="flex min-h-[44px] flex-none items-center gap-1.5 border border-ink-950/20 px-2.5 text-ink-950/60"
+          className="flex min-h-[44px] flex-none items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-2.5 text-ink-950/60"
         >
           {!open && <Filter className="h-3 w-3" strokeWidth={2} />}
           {!open && activeCount > 0 && (

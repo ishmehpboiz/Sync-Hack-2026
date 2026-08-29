@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Radio, Info, ChevronDown, ChevronUp } from "lucide-react";
@@ -53,7 +51,7 @@ export function IdentityBar({ eventCount, hereNow }: IdentityBarProps) {
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="ml-1.5 flex min-h-[44px] flex-none items-center gap-1.5 whitespace-nowrap border border-ink-950/20 px-3 font-mono text-[9px] font-medium tracking-[0.08em] text-ink-950/60"
+                    className="ml-1.5 flex min-h-[44px] flex-none items-center gap-1.5 whitespace-nowrap rounded-lg border border-white/15 bg-white/5 backdrop-blur-md px-3 font-mono text-[9px] font-medium tracking-[0.08em] text-ink-950/60"
                   >
                     <Info className="h-3 w-3" strokeWidth={2} />
                     HOW IT WORKS
@@ -73,7 +71,7 @@ export function IdentityBar({ eventCount, hereNow }: IdentityBarProps) {
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Collapse" : "Expand"}
-          className="flex h-[30px] w-[30px] flex-none items-center justify-center border border-ink-950/20 text-ink-950/60"
+          className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-lg border border-white/15 bg-white/5 backdrop-blur-md text-ink-950/60"
         >
           {open ? <ChevronUp className="h-3.5 w-3.5" strokeWidth={2} /> : <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} />}
         </button>
