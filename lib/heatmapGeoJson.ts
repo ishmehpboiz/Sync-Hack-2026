@@ -52,31 +52,44 @@ export function toHeatmapGeoJSON(
  * react-map-gl <Layer>. Weight ramps intensity, zoom ramps radius so it
  * cross-fades into individual pins as the viewer zooms in (handoff doc,
  * "Live heatmap layer" — "cross-fades into individual pins when zoomed in").
- * Colors follow the brief's dark "control room" palette (section: Frontend
- * direction) — electric cyan/blue buzz glow.
+ * Colors follow the approved greyscale "no hue anywhere" design language
+ * (Desktop App Greyscale.dc.html) — buzz is carried by lightness alone, not
+ * color. Ramp runs dark-to-light (rather than light-to-dark) because it sits
+ * on the app's dark basemap — high buzz needs to get brighter to read, not
+ * darker into invisibility.
+ *
+ * Tuned for high contrast with a wide "quiet" floor: density has to build up
+ * past ~0.4 before anything shows at all, and past that it snaps quickly to
+ * bright. Combined with computeBuzzScores' log2 soft-cap and a populated
+ * baseline of seeded activity (scripts/seed.ts), this keeps one lone
+ * check-in from lighting up as a big, disproportionate blob — it takes real
+ * accumulated density nearby to read as "buzzing."
  */
 export const heatmapLayerStyle = {
   id: "buzz-heatmap",
   type: "heatmap" as const,
   paint: {
     "heatmap-weight": ["get", "weight"],
-    "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 10, 1, 15, 3],
+    "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 10, 1, 15, 2],
     "heatmap-color": [
       "interpolate",
       ["linear"],
       ["heatmap-density"],
       0,
-      "rgba(10,14,26,0)", // background navy, transparent
-      0.2,
-      "rgba(56,189,248,0.3)", // cyan, low density
-      0.5,
-      "rgba(56,189,248,0.6)",
-      0.8,
-      "rgba(34,211,238,0.85)",
+      "rgba(250,250,250,0)", // transparent — quiet floor extends out to 0.4
+      0.4,
+      "rgba(94,94,94,0.5)", // #5e5e5e
+      0.65,
+      "rgba(180,180,180,0.75)", // #b4b4b4
+      0.85,
+      "rgba(232,232,232,0.92)", // #e8e8e8
       1,
-      "rgba(165,243,252,1)", // near-white cyan at peak
+      "rgba(250,250,250,1)", // #fafafa — buzzing
     ],
-    "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 10, 15, 15, 30],
-    "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 13, 1, 16, 0],
+    "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 10, 10, 15, 24],
+    // Fully off at city zoom (SuburbBlooms owns that view — overlapping the
+    // two washed everything out into one big haze) and off again once pins
+    // take over; only visible in the suburb-zoom band between them.
+    "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 11.5, 0, 13, 1, 15, 1, 16.2, 0],
   },
 };
