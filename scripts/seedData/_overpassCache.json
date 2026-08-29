@@ -1,0 +1,58 @@
+{
+  "Sydney CBD & The Rocks": {
+    "food": 417,
+    "nightlife": 96,
+    "shopping": 344,
+    "activities": 362,
+    "sightseeing": 532
+  },
+  "Newtown": {
+    "food": 200,
+    "nightlife": 38,
+    "shopping": 239,
+    "activities": 180,
+    "sightseeing": 26
+  },
+  "Marrickville": {
+    "food": 100,
+    "nightlife": 19,
+    "shopping": 110,
+    "activities": 149,
+    "sightseeing": 7
+  },
+  "Surry Hills": {
+    "food": 484,
+    "nightlife": 131,
+    "shopping": 409,
+    "activities": 303,
+    "sightseeing": 122
+  },
+  "Bondi Beach": {
+    "food": 157,
+    "nightlife": 11,
+    "shopping": 131,
+    "activities": 285,
+    "sightseeing": 25
+  },
+  "Manly": {
+    "food": 106,
+    "nightlife": 14,
+    "shopping": 68,
+    "activities": 248,
+    "sightseeing": 49
+  },
+  "Glebe": {
+    "food": 140,
+    "nightlife": 25,
+    "shopping": 181,
+    "activities": 419,
+    "sightseeing": 42
+  },
+  "Redfern & Eveleigh": {
+    "food": 297,
+    "nightlife": 59,
+    "shopping": 310,
+    "activities": 429,
+    "sightseeing": 99
+  }
+}
