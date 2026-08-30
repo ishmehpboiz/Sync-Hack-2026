@@ -4,12 +4,40 @@ Real-time city map of community happenings that reshapes itself around the
 viewer's live state. See `Handoff_Document.docx` for full project context
 (concept, judging criteria, roadmap, demo script).
 
+**Live:** https://sync-hack-2026.vercel.app — deployed on Vercel from `main`.
+
+## Pitch materials
+
+- `pitch_script.md` — 3-minute pitch video script: must-mention feature
+  list, timed structure, user stories, delivery notes.
+- `Pulse_Pitch_Deck.pptx` — 10-slide pitch deck (dark control-room theme
+  matching the app), with speaker notes mirroring the script.
+
+## Deployment
+
+The app deploys to Vercel from `main`. Three env vars must be set on the
+Vercel project (all `NEXT_PUBLIC_` — they ship in the client bundle by
+design):
+
+- `NEXT_PUBLIC_SUPABASE_URL` — the Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — the **anon** key (never service_role;
+  anon is safe to expose because RLS limits it to public read + activity
+  inserts)
+- `NEXT_PUBLIC_MAPTILER_KEY` — MapTiler key for the basemap
+
+`.env.local` and `.vercel/` are gitignored — never commit them.
+
+## Frontend
+
+Next.js (App Router) + MapLibre GL app in `app/`, `components/`, `hooks/`:
+onboarding, mood quiz, live map with pin glow + heatmap, suburb hero
+drawer, category/accessibility filters, glassmorphism UI.
+
 ## Backend
 
 Supabase schema, seed data, and shared logic for the realtime map's data
 layer — the Backend Engineer's scope from the handoff doc: schema, seed
 data, realtime wiring, suburb-matching, and the golden-path demo dataset.
-The Next.js frontend app (map UI, quiz, animation) is not in this repo yet.
 
 ### Layout
 
